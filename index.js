@@ -88,7 +88,9 @@ run().catch(console.dir);
 app.get("/", (req, res) => {
   res.send("this is backend");
 });
-
+app.get("/hello", (req, res) => {
+  res.send("success hello");
+});
 app.listen(port, () => {
   console.log("running port is : ", port);
 });
