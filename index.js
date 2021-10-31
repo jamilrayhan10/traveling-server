@@ -19,10 +19,9 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
-    // console.log("success");
-    // console.log("success async function");
     const database = client.db("traveling");
     const servicesCollection = database.collection("travelingServices");
+    const ordersCollection = database.collection("orders");
 
     // get api
     app.get("/services", async (req, res) => {
@@ -41,9 +40,7 @@ async function run() {
     // post api
     app.post("/services", async (req, res) => {
       const service = req.body;
-      //   console.log(service);
       const result = await servicesCollection.insertOne(service);
-      //   console.log(result);
       res.json(result);
     });
 
@@ -52,6 +49,34 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await servicesCollection.deleteOne(query);
+      res.json(result);
+    });
+
+    // get api for orders
+    app.get("/orders/:name", async (req, res) => {
+      const name = req.params.name;
+      const query = { name: name };
+      const result = await servicesCollection.findOne(query);
+      res.json(result);
+    });
+
+    // order api
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      order.createdAt = new Date();
+      const result = await ordersCollection.insertOne(order);
+      // console.log("result");
+      res.json("result");
+    });
+    // get api for orders
+    app.get("/myorders/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await ordersCollection.find(query).toArray();
+      res.json(result);
+    });
+    app.get("/allOrders", async (req, res) => {
+      const result = await ordersCollection.find({}).toArray();
       res.json(result);
     });
   } finally {
